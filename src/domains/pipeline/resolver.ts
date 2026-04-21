@@ -1,11 +1,43 @@
 import NodePath from "node:path";
 import TypeScript from "typescript";
 import { fileExists } from "../../shared/fs.js";
-import {
-  getCandidateFilePaths,
-  isFileSpecifier,
-  isInsideNodeModules,
-} from "./utils.js";
+
+const SUPPORTED_EXTENSIONS = [
+  ".ts",
+  ".tsx",
+  ".mts",
+  ".cts",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
+] as const;
+
+function isFileSpecifier(importSpecifier: string): boolean {
+  return importSpecifier.startsWith(".") || importSpecifier.startsWith("/");
+}
+
+function getCandidateFilePaths(baseFilePath: string): string[] {
+  const candidateFilePaths = new Set<string>();
+
+  candidateFilePaths.add(baseFilePath);
+
+  for (const extension of SUPPORTED_EXTENSIONS) {
+    candidateFilePaths.add(`${baseFilePath}${extension}`);
+  }
+
+  for (const extension of SUPPORTED_EXTENSIONS) {
+    candidateFilePaths.add(NodePath.join(baseFilePath, `index${extension}`));
+  }
+
+  return [...candidateFilePaths];
+}
+
+function isInsideNodeModules(filePath: string): boolean {
+  return NodePath.normalize(filePath)
+    .split(NodePath.sep)
+    .includes("node_modules");
+}
 
 export async function resolveImportFilePath(
   importSpecifier: string,

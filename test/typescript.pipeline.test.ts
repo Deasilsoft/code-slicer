@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
-import { collectFilesFromEntry } from "../src/domains/modules/index.js";
+import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
 
 describe("TypeScript traversal", () => {
   it("collects TypeScript dependencies in traversal order", async () => {
@@ -33,7 +33,7 @@ describe("TypeScript traversal", () => {
       await writeFile(nestedFilePath, 'export const nested = "nested";\n');
       await writeFile(helperIndexFilePath, 'export const helper = "helper";\n');
 
-      const files = await collectFilesFromEntry(entryFilePath);
+      const files = await collectDependencyFiles(entryFilePath);
 
       expect(
         files.map((file) => NodePath.relative(tempDirPath, file.filePath)),

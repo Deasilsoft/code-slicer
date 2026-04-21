@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import NodePath from "node:path";
 import TypeScript from "typescript";
 import { describe, expect, it } from "vitest";
-import { resolveImportFilePath } from "../src/domains/modules/resolver.js";
+import { resolveImportFilePath } from "../src/domains/pipeline/resolver.js";
 
 const compilerOptions: TypeScript.CompilerOptions = {
   module: TypeScript.ModuleKind.NodeNext,

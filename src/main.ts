@@ -1,7 +1,7 @@
 import { cac } from "cac";
 import NodePath from "node:path";
 import pkg from "../package.json" with { type: "json" };
-import { collectFilesFromEntry } from "./domains/modules/index.js";
+import { collectDependencyFiles } from "./domains/pipeline/index.js";
 
 export async function main(argv: string[]): Promise<void> {
   const cli = cac("code-slicer");
@@ -9,18 +9,17 @@ export async function main(argv: string[]): Promise<void> {
   cli
     .command(
       "<file-path>",
-      "Extract dependency-aware code context from an entry file",
+      "Collect local dependency files and output their paths and source code",
     )
     .action(async (filePath: string) => {
-      const moduleFiles = await collectFilesFromEntry(filePath);
+      const files = await collectDependencyFiles(filePath);
 
-      for (const moduleFile of moduleFiles) {
+      for (const file of files) {
         const relativeFilePath =
-          NodePath.relative(process.cwd(), moduleFile.filePath) ||
-          moduleFile.filePath;
+          NodePath.relative(process.cwd(), file.filePath) || file.filePath;
 
         process.stdout.write(`${relativeFilePath}\n`);
-        process.stdout.write(`${moduleFile.sourceCode}\n\n`);
+        process.stdout.write(`${file.sourceCode}\n\n`);
       }
     });
 

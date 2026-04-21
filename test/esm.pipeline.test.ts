@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
-import { collectFilesFromEntry } from "../src/domains/modules/index.js";
+import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
 
 describe("ESM traversal", () => {
   it("collects an ESM entry and its local dependency", async () => {
@@ -20,7 +20,7 @@ describe("ESM traversal", () => {
       );
       await writeFile(dependencyFilePath, 'export const dep = "esm";\n');
 
-      const files = await collectFilesFromEntry(entryFilePath);
+      const files = await collectDependencyFiles(entryFilePath);
 
       expect(files.map((file) => NodePath.basename(file.filePath))).toEqual([
         "entry.mjs",

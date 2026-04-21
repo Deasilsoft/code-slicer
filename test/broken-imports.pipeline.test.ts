@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
-import { collectFilesFromEntry } from "../src/domains/modules/index.js";
+import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
 
 describe("TypeScript traversal with broken imports", () => {
   it("keeps resolvable imports and skips missing or external modules", async () => {
@@ -20,7 +20,7 @@ describe("TypeScript traversal with broken imports", () => {
       );
       await writeFile(presentFilePath, 'export const present = "ok";\n');
 
-      const files = await collectFilesFromEntry(entryFilePath);
+      const files = await collectDependencyFiles(entryFilePath);
 
       expect(files.map((file) => NodePath.basename(file.filePath))).toEqual([
         "entry.ts",

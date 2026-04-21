@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
-import { collectFilesFromEntry } from "../src/domains/modules/index.js";
+import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
 
 describe("CJS traversal", () => {
   it("collects a CJS entry that uses dynamic import", async () => {
@@ -20,7 +20,7 @@ describe("CJS traversal", () => {
       );
       await writeFile(dependencyFilePath, 'module.exports = { dep: "cjs" };\n');
 
-      const files = await collectFilesFromEntry(entryFilePath);
+      const files = await collectDependencyFiles(entryFilePath);
 
       expect(files.map((file) => NodePath.basename(file.filePath))).toEqual([
         "entry.cjs",
