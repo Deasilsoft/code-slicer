@@ -93,10 +93,10 @@ npm run format
 
 - Domain-Driven Design (DDD)
 - Clean Code:
-    - Small, focused functions
-    - Explicit naming
-    - No hidden side effects
-    - Clear separation of concerns
+  - Small, focused functions
+  - Explicit naming
+  - No hidden side effects
+  - Clear separation of concerns
 
 ### Expectations
 

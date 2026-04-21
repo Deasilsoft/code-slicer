@@ -7,32 +7,7 @@ import {
   isInsideNodeModules,
 } from "./utils.js";
 
-const resolutionCache = new Map<string, string | null>();
-
 export async function resolveImportFilePath(
-  importSpecifier: string,
-  fromFilePath: string,
-  compilerOptions: TypeScript.CompilerOptions,
-): Promise<string | null> {
-  const cacheKey = `${fromFilePath}::${importSpecifier}`;
-  const cachedResolvedFilePath = resolutionCache.get(cacheKey);
-
-  if (cachedResolvedFilePath !== undefined) {
-    return cachedResolvedFilePath;
-  }
-
-  const resolvedFilePath = await resolveImportFilePathUncached(
-    importSpecifier,
-    fromFilePath,
-    compilerOptions,
-  );
-
-  resolutionCache.set(cacheKey, resolvedFilePath);
-
-  return resolvedFilePath;
-}
-
-async function resolveImportFilePathUncached(
   importSpecifier: string,
   fromFilePath: string,
   compilerOptions: TypeScript.CompilerOptions,

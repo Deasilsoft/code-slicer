@@ -39,6 +39,7 @@
     "knip": "knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -48,12 +49,14 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
     "eslint": "^10.2.1",
     "knip": "^6.5.0",
     "prettier": "^3.8.3",
     "prettier-plugin-packagejson": "^3.0.2",
     "tsx": "^4.21.0",
-    "typescript-eslint": "^8.59.0"
+    "typescript-eslint": "^8.59.0",
+    "vitest": "^4.1.4"
   },
   "engines": {
     "node": ">=22"
