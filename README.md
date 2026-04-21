@@ -1,5 +1,9 @@
 # code-slicer
 
+[![npm version](https://img.shields.io/npm/v/code-slicer)](https://www.npmjs.com/package/code-slicer)
+[![Code Quality](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml/badge.svg?branch=main)](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml)
+[![codecov](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
+
 Extract minimal, dependency-aware code context from an entry file for use in AI prompts.
 
 `code-slicer` is a CLI that traverses local imports from an entry file and outputs relevant code in dependency order.
@@ -93,10 +97,10 @@ npm run format
 
 - Domain-Driven Design (DDD)
 - Clean Code:
-  - Small, focused functions
-  - Explicit naming
-  - No hidden side effects
-  - Clear separation of concerns
+    - Small, focused functions
+    - Explicit naming
+    - No hidden side effects
+    - Clear separation of concerns
 
 ### Expectations
 
