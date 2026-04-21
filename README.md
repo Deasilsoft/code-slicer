@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/code-slicer)](https://www.npmjs.com/package/code-slicer)
 [![Code Quality](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml/badge.svg?branch=main)](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml)
 [![Code Coverage](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
-[![Socket](https://badge.socket.dev/npm/package/code-slicer](https://socket.dev/npm/package/code-slicer)
+[![Socket](https://badge.socket.dev/npm/package/code-slicer)](https://socket.dev/npm/package/code-slicer)
 
 Extract minimal, dependency-aware code context from an entry file for use in AI prompts.
 
