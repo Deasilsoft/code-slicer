@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/code-slicer)](https://www.npmjs.com/package/code-slicer)
 [![Code Quality](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml/badge.svg?branch=main)](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml)
 [![codecov](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
-[![Socket Badge](https://badge.socket.dev/npm/package/code-slicer/0.1.0)](https://badge.socket.dev/npm/package/code-slicer/0.1.0)
+[![Socket](https://img.shields.io/badge/socket-security-blue)](https://socket.dev/npm/package/code-slicer)
 
 Extract minimal, dependency-aware code context from an entry file for use in AI prompts.
 
@@ -34,6 +34,7 @@ code-slicer src/entrypoint.ts
 
 - Starts from a single entry file
 - Follows local imports and dependencies
+- Supports JavaScript, TypeScript, JSX, TSX, React, and Vue
 - Outputs files in dependency order
 - Includes full source code for each file
 - Excludes external packages and unresolved modules
@@ -68,12 +69,15 @@ Each file is printed as:
 
 ## How it works
 
-1. Parse the entry file using the TypeScript AST
-2. Extract imports (`import`, `export ... from`, `import()`)
-3. Resolve modules using TypeScript resolution with fallback logic
-4. Recursively traverse dependencies
-5. Cache file reads and resolution results
-6. Skip external and unresolved modules
+1. Detect file type (JavaScript, TypeScript, Vue)
+2. Parse source
+   - TypeScript AST for JS/TS/JSX/TSX
+   - Vue SFC parser for `.vue` files
+3. Extract imports (`import`, `export ... from`, `import()`)
+4. Resolve modules using TypeScript resolution with fallback logic
+5. Recursively traverse dependencies
+6. Track visited files to avoid cycles
+7. Skip external and unresolved modules
 
 ## Use cases
 
