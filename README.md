@@ -71,8 +71,8 @@ Each file is printed as:
 
 1. Detect file type (JavaScript, TypeScript, Vue)
 2. Parse source
-    - TypeScript AST for JS/TS/JSX/TSX
-    - Vue SFC parser for `.vue` files
+   - TypeScript AST for JS/TS/JSX/TSX
+   - Vue SFC parser for `.vue` files
 3. Extract imports (`import`, `export ... from`, `import()`)
 4. Resolve modules using TypeScript resolution with fallback logic
 5. Recursively traverse dependencies
@@ -102,10 +102,10 @@ npm run format
 
 - Domain-Driven Design (DDD)
 - Clean Code:
-    - Small, focused functions
-    - Explicit naming
-    - No hidden side effects
-    - Clear separation of concerns
+  - Small, focused functions
+  - Explicit naming
+  - No hidden side effects
+  - Clear separation of concerns
 
 ### Expectations
 
