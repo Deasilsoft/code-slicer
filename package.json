@@ -40,9 +40,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
+    "@vue/compiler-sfc": "^3.5.32",
     "cac": "^7.0.0",
     "typescript": "^6.0.3"
   },

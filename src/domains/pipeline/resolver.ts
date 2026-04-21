@@ -11,6 +11,7 @@ const SUPPORTED_EXTENSIONS = [
   ".jsx",
   ".mjs",
   ".cjs",
+  ".vue",
 ] as const;
 
 function isFileSpecifier(importSpecifier: string): boolean {

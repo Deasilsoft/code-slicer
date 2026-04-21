@@ -1,6 +1,6 @@
 import NodePath from "node:path";
 
-type ParserType = "javascript" | "typescript" | "unknown";
+type ParserType = "javascript" | "typescript" | "vue" | "unknown";
 
 export function getParserType(filePath: string): ParserType {
   switch (NodePath.extname(filePath).toLowerCase()) {
@@ -14,6 +14,8 @@ export function getParserType(filePath: string): ParserType {
     case ".cts":
     case ".tsx":
       return "typescript";
+    case ".vue":
+      return "vue";
     default:
       return "unknown";
   }
