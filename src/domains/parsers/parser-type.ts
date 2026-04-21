@@ -1,6 +1,6 @@
 import NodePath from "node:path";
 
-export type ParserType = "javascript" | "typescript" | "unknown";
+type ParserType = "javascript" | "typescript" | "unknown";
 
 export function getParserType(filePath: string): ParserType {
   switch (NodePath.extname(filePath).toLowerCase()) {
