@@ -60,4 +60,34 @@ describe("resolver", () => {
       },
     );
   });
+
+  it("ignores fallback resolutions that resolve to files inside node_modules", async () => {
+    await withTestProject(
+      {
+        "entry.ts": 'import "./node_modules/example-pkg";\n',
+        "node_modules/example-pkg/index.vue": "<template><div /></template>\n",
+      },
+      async (projectPath) => {
+        const fromFilePath = getProjectFilePath(projectPath, "entry.ts");
+
+        const resolvedByTypeScript =
+          TypeScript.resolveModuleName(
+            "./node_modules/example-pkg",
+            fromFilePath,
+            compilerOptions,
+            TypeScript.sys,
+          ).resolvedModule?.resolvedFileName ?? null;
+
+        expect(resolvedByTypeScript).toBeNull();
+
+        const resolvedPath = await resolveImportFilePath(
+          "./node_modules/example-pkg",
+          fromFilePath,
+          compilerOptions,
+        );
+
+        expect(resolvedPath).toBeNull();
+      },
+    );
+  });
 });

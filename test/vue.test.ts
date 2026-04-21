@@ -47,6 +47,56 @@ describe("Vue traversal", () => {
     );
   });
 
+  it('collects dependencies from Vue <script lang="jsx"> blocks', async () => {
+    await withTestProject(
+      {
+        "entry.vue": [
+          '<script lang="jsx">',
+          'import { dep } from "./dep.jsx";',
+          "console.log(dep);",
+          "</script>",
+          "",
+        ].join("\n"),
+        "dep.jsx": 'export const dep = "jsx";\n',
+      },
+      async (projectPath) => {
+        const files = await collectDependencyFiles(
+          getProjectFilePath(projectPath, "entry.vue"),
+        );
+
+        expect(getRelativeFilePaths(projectPath, files)).toEqual([
+          "entry.vue",
+          "dep.jsx",
+        ]);
+      },
+    );
+  });
+
+  it('collects dependencies from Vue <script lang="tsx"> blocks', async () => {
+    await withTestProject(
+      {
+        "entry.vue": [
+          '<script lang="tsx">',
+          'import { dep } from "./dep.tsx";',
+          "console.log(dep);",
+          "</script>",
+          "",
+        ].join("\n"),
+        "dep.tsx": 'export const dep = "tsx";\n',
+      },
+      async (projectPath) => {
+        const files = await collectDependencyFiles(
+          getProjectFilePath(projectPath, "entry.vue"),
+        );
+
+        expect(getRelativeFilePaths(projectPath, files)).toEqual([
+          "entry.vue",
+          "dep.tsx",
+        ]);
+      },
+    );
+  });
+
   it("collects dependencies from both script and script setup blocks", async () => {
     await withTestProject(
       {
