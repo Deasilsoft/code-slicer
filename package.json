@@ -1,0 +1,63 @@
+{
+  "name": "code-slicer",
+  "version": "0.0.0",
+  "description": "Extract minimal, dependency-aware code context from an entry file for use in AI prompts.",
+  "keywords": [
+    "ai",
+    "cli",
+    "code",
+    "context",
+    "dependencies",
+    "esm",
+    "imports",
+    "prompt",
+    "typescript"
+  ],
+  "homepage": "https://github.com/Deasilsoft/code-slicer",
+  "bugs": {
+    "url": "https://github.com/Deasilsoft/code-slicer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Deasilsoft/code-slicer.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "code-slicer": "./dist/entrypoint.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "chmod +x dist/entrypoint.js",
+    "clean": "rm -rf dist",
+    "dev": "tsx src/entrypoint.ts",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "knip": "knip",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublishOnly": "npm run clean && npm run build && npm run typecheck",
+    "start": "node dist/entrypoint.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cac": "^7.0.0",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.1",
+    "knip": "^6.5.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-packagejson": "^3.0.2",
+    "tsx": "^4.21.0",
+    "typescript-eslint": "^8.59.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
