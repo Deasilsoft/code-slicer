@@ -39,8 +39,6 @@
     "knip": "knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run clean && npm run build && npm run typecheck",
-    "start": "node dist/entrypoint.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -58,6 +56,6 @@
     "typescript-eslint": "^8.59.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }
