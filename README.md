@@ -2,8 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/code-slicer)](https://www.npmjs.com/package/code-slicer)
 [![Code Quality](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml/badge.svg?branch=main)](https://github.com/Deasilsoft/code-slicer/actions/workflows/code-quality.yml)
-[![codecov](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
-[![Socket](https://img.shields.io/badge/socket-security-blue)](https://socket.dev/npm/package/code-slicer)
+[![Code Coverage](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
+[![Socket](https://badge.socket.dev/npm/package/code-slicer](https://socket.dev/npm/package/code-slicer)
 
 Extract minimal, dependency-aware code context from an entry file for use in AI prompts.
 
@@ -71,8 +71,8 @@ Each file is printed as:
 
 1. Detect file type (JavaScript, TypeScript, Vue)
 2. Parse source
-   - TypeScript AST for JS/TS/JSX/TSX
-   - Vue SFC parser for `.vue` files
+    - TypeScript AST for JS/TS/JSX/TSX
+    - Vue SFC parser for `.vue` files
 3. Extract imports (`import`, `export ... from`, `import()`)
 4. Resolve modules using TypeScript resolution with fallback logic
 5. Recursively traverse dependencies
@@ -102,10 +102,10 @@ npm run format
 
 - Domain-Driven Design (DDD)
 - Clean Code:
-  - Small, focused functions
-  - Explicit naming
-  - No hidden side effects
-  - Clear separation of concerns
+    - Small, focused functions
+    - Explicit naming
+    - No hidden side effects
+    - Clear separation of concerns
 
 ### Expectations
 
