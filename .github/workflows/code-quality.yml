@@ -48,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Upload coverage
-        if: matrix.node-version == 24
+        if: matrix.node-version == 24 && github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v6
         with:
           files: ./coverage/lcov.info
