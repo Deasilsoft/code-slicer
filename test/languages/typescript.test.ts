@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
+import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
 import {
   getProjectFilePath,
   getRelativeFilePaths,
   withTestProject,
-} from "./helpers/project.js";
+} from "../helpers/project.js";
 
-describe("TypeScript traversal", () => {
+describe("TypeScript file collection", () => {
   it("collects dependencies in traversal order", async () => {
     await withTestProject(
       {

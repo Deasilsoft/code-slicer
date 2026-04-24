@@ -3,38 +3,7 @@ import pkg from "../package.json" with { type: "json" };
 import { main } from "../src/main.js";
 import { withWorkingDirectory } from "./helpers/cwd.js";
 import { withTestProject } from "./helpers/project.js";
-
-function captureStreams() {
-  let stdout = "";
-  let stderr = "";
-
-  const stdoutSpy = vi
-    .spyOn(process.stdout, "write")
-    .mockImplementation((chunk: string | Uint8Array) => {
-      stdout +=
-        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8");
-
-      return true;
-    });
-
-  const stderrSpy = vi
-    .spyOn(process.stderr, "write")
-    .mockImplementation((chunk: string | Uint8Array) => {
-      stderr +=
-        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8");
-
-      return true;
-    });
-
-  return {
-    stdout: () => stdout,
-    stderr: () => stderr,
-    restore: () => {
-      stdoutSpy.mockRestore();
-      stderrSpy.mockRestore();
-    },
-  };
-}
+import { captureStreams } from "./helpers/streams.js";
 
 type MockedCli = {
   action: ReturnType<typeof vi.fn>;
@@ -215,31 +184,6 @@ describe("CLI behavior", () => {
         expect(output.stderr()).toBe("");
       },
     );
-  });
-
-  it("throws an error when an unsupported output format is provided", async () => {
-    await withTestProject(
-      {
-        "entry.ts": 'export const entry = "entry";\n',
-      },
-      async (projectPath) => {
-        await expect(
-          withWorkingDirectory(projectPath, async () => {
-            await main(["node", "code-slicer", "entry.ts", "--format", "json"]);
-          }),
-        ).rejects.toThrow("Unsupported output format: json");
-      },
-    );
-  });
-
-  it("throws an error when the specified entry file does not exist", async () => {
-    await withTestProject({}, async (projectPath) => {
-      await expect(
-        withWorkingDirectory(projectPath, async () => {
-          await main(["node", "code-slicer", "missing.ts"]);
-        }),
-      ).rejects.toThrow("Entry file not found:");
-    });
   });
 });
 

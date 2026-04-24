@@ -15,7 +15,7 @@ type VueDescriptor = {
   scriptSetup: ScriptBlock | null;
 };
 
-type VueSfcParse = (
+type VueParse = (
   source: string,
   options: { filename: string },
 ) => {
@@ -24,7 +24,11 @@ type VueSfcParse = (
 };
 
 type ScriptBlockParser = {
-  extract: typeof extractImportSpecifiersFromJavaScript;
+  extract: (
+    filePath: string,
+    sourceCode: string,
+    scriptKind: TypeScript.ScriptKind,
+  ) => string[];
   scriptKind: TypeScript.ScriptKind;
 };
 
@@ -47,13 +51,13 @@ const SCRIPT_BLOCK_PARSERS: Record<string, ScriptBlockParser> = {
   },
 };
 
-let vueSfcParse: VueSfcParse | undefined;
+let vueParse: VueParse | undefined;
 
 export function extractVueImportSpecifiers(
   filePath: string,
   sourceCode: string,
 ): string[] {
-  const parse = getVueSfcParse();
+  const parse = getVueParse();
   const { descriptor, errors } = parse(sourceCode, {
     filename: filePath,
   });
@@ -64,31 +68,40 @@ export function extractVueImportSpecifiers(
     );
   }
 
-  return collectScriptBlockImportSpecifiers(
-    filePath,
-    getScriptBlocks(descriptor),
-  );
+  const importSpecifiers = new Set<string>();
+  const scriptBlocks = [descriptor.script, descriptor.scriptSetup];
+
+  for (const scriptBlock of scriptBlocks) {
+    if (!scriptBlock) {
+      continue;
+    }
+
+    for (const importSpecifier of extractImportsFromScriptBlock(
+      filePath,
+      scriptBlock,
+    )) {
+      importSpecifiers.add(importSpecifier);
+    }
+  }
+
+  return [...importSpecifiers];
 }
 
-function getVueSfcParse(): VueSfcParse {
-  if (vueSfcParse) {
-    return vueSfcParse;
+function getVueParse(): VueParse {
+  if (vueParse) {
+    return vueParse;
   }
 
   try {
-    const vueCompilerSfc = require("@vue/compiler-sfc") as {
-      parse: VueSfcParse;
+    const vue = require("@vue/compiler-sfc") as {
+      parse: VueParse;
     };
 
-    vueSfcParse = vueCompilerSfc.parse;
+    vueParse = vue.parse;
 
-    return vueSfcParse;
+    return vueParse;
   } catch (error: unknown) {
-    const isMissingVueCompiler =
-      isNodeErrorWithCode(error, "MODULE_NOT_FOUND") &&
-      isErrorMessageContaining(error, "@vue/compiler-sfc");
-
-    if (isMissingVueCompiler) {
+    if (isMissingVueCompilerError(error)) {
       throw new Error(
         "Vue support requires optional dependency @vue/compiler-sfc. Install it with: npm install @vue/compiler-sfc",
         {
@@ -101,61 +114,27 @@ function getVueSfcParse(): VueSfcParse {
   }
 }
 
-function collectScriptBlockImportSpecifiers(
-  filePath: string,
-  scriptBlocks: ScriptBlock[],
-): string[] {
-  const importSpecifiers = new Set<string>();
-
-  for (const scriptBlock of scriptBlocks) {
-    for (const importSpecifier of extractScriptBlockImportSpecifiers(
-      filePath,
-      scriptBlock.content,
-      scriptBlock.lang,
-    )) {
-      importSpecifiers.add(importSpecifier);
-    }
+function isMissingVueCompilerError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
   }
 
-  return [...importSpecifiers];
-}
-
-function getScriptBlocks(descriptor: VueDescriptor): ScriptBlock[] {
-  return [descriptor.script, descriptor.scriptSetup].filter(
-    (scriptBlock): scriptBlock is ScriptBlock => scriptBlock !== null,
-  );
-}
-
-function isNodeErrorWithCode(error: unknown, code: string): boolean {
   return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === code
+    (error as Error & { code?: unknown }).code === "MODULE_NOT_FOUND" &&
+    /Cannot find module ['"]@vue\/compiler-sfc['"]/.test(error.message)
   );
 }
 
-function isErrorMessageContaining(error: unknown, text: string): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error &&
-    typeof error.message === "string" &&
-    error.message.includes(text)
-  );
-}
-
-function extractScriptBlockImportSpecifiers(
+function extractImportsFromScriptBlock(
   filePath: string,
-  sourceCode: string,
-  language: string | undefined,
+  scriptBlock: ScriptBlock,
 ): string[] {
-  const languageKey = language ?? "js";
+  const languageKey = scriptBlock.lang ?? "js";
   const parser = SCRIPT_BLOCK_PARSERS[languageKey];
 
   if (!parser) {
     return [];
   }
 
-  return parser.extract(filePath, sourceCode, parser.scriptKind);
+  return parser.extract(filePath, scriptBlock.content, parser.scriptKind);
 }

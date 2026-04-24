@@ -34,7 +34,7 @@
     "postbuild": "chmod +x dist/entrypoint.js",
     "clean": "rm -rf dist",
     "predeps:reset": "rm -rf node_modules package-lock.json",
-    "deps:reset": "npm install",
+    "deps:reset": "npm install --include=optional",
     "dev": "tsx src/entrypoint.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",

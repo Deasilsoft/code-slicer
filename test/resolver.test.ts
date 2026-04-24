@@ -8,7 +8,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
   moduleResolution: TypeScript.ModuleResolutionKind.NodeNext,
 };
 
-describe("resolver", () => {
+describe("Import resolver", () => {
   it("drops imports resolved to node_modules", async () => {
     await withTestProject(
       {
