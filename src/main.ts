@@ -1,6 +1,6 @@
 import { cac } from "cac";
-import NodePath from "node:path";
 import pkg from "../package.json" with { type: "json" };
+import { renderCollectedFiles } from "./domains/output/formatter.js";
 import { collectDependencyFiles } from "./domains/pipeline/index.js";
 
 export async function main(argv: string[]): Promise<void> {
@@ -9,18 +9,16 @@ export async function main(argv: string[]): Promise<void> {
   cli
     .command(
       "<file-path>",
-      "Collect local dependency files and output their paths and source code",
+      "Collect local dependency files and output them in the selected format",
     )
-    .action(async (filePath: string) => {
+    .option("--format <format>", "Output format (plain, markdown, html, xml)", {
+      default: "plain",
+    })
+    .action(async (filePath: string, options: { format?: string }) => {
       const files = await collectDependencyFiles(filePath);
+      const output = renderCollectedFiles(files, options.format);
 
-      for (const file of files) {
-        const relativeFilePath =
-          NodePath.relative(process.cwd(), file.filePath) || file.filePath;
-
-        process.stdout.write(`${relativeFilePath}\n`);
-        process.stdout.write(`${file.sourceCode}\n\n`);
-      }
+      process.stdout.write(`${output}\n`);
     });
 
   cli.help();
