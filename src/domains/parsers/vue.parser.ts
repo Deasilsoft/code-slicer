@@ -1,12 +1,59 @@
-import { parse } from "@vue/compiler-sfc";
+import { createRequire } from "node:module";
 import TypeScript from "typescript";
 import { extractImportSpecifiersFromJavaScript } from "./javascript.parser.js";
 import { extractImportSpecifiersFromTypeScript } from "./typescript.parser.js";
+
+const require = createRequire(import.meta.url);
+
+type ScriptBlock = {
+  content: string;
+  lang?: string;
+};
+
+type VueDescriptor = {
+  script: ScriptBlock | null;
+  scriptSetup: ScriptBlock | null;
+};
+
+type VueSfcParse = (
+  source: string,
+  options: { filename: string },
+) => {
+  descriptor: VueDescriptor;
+  errors: unknown[];
+};
+
+type ScriptBlockParser = {
+  extract: typeof extractImportSpecifiersFromJavaScript;
+  scriptKind: TypeScript.ScriptKind;
+};
+
+const SCRIPT_BLOCK_PARSERS: Record<string, ScriptBlockParser> = {
+  js: {
+    extract: extractImportSpecifiersFromJavaScript,
+    scriptKind: TypeScript.ScriptKind.JS,
+  },
+  jsx: {
+    extract: extractImportSpecifiersFromJavaScript,
+    scriptKind: TypeScript.ScriptKind.JSX,
+  },
+  ts: {
+    extract: extractImportSpecifiersFromTypeScript,
+    scriptKind: TypeScript.ScriptKind.TS,
+  },
+  tsx: {
+    extract: extractImportSpecifiersFromTypeScript,
+    scriptKind: TypeScript.ScriptKind.TSX,
+  },
+};
+
+let vueSfcParse: VueSfcParse | undefined;
 
 export function extractVueImportSpecifiers(
   filePath: string,
   sourceCode: string,
 ): string[] {
+  const parse = getVueSfcParse();
   const { descriptor, errors } = parse(sourceCode, {
     filename: filePath,
   });
@@ -17,19 +64,53 @@ export function extractVueImportSpecifiers(
     );
   }
 
-  const importSpecifiers = new Set<string>();
-  const scriptBlocks = [descriptor.script, descriptor.scriptSetup].filter(
-    (block): block is NonNullable<typeof block> => block !== null,
+  return collectScriptBlockImportSpecifiers(
+    filePath,
+    getScriptBlocks(descriptor),
   );
+}
+
+function getVueSfcParse(): VueSfcParse {
+  if (vueSfcParse) {
+    return vueSfcParse;
+  }
+
+  try {
+    const vueCompilerSfc = require("@vue/compiler-sfc") as {
+      parse: VueSfcParse;
+    };
+
+    vueSfcParse = vueCompilerSfc.parse;
+
+    return vueSfcParse;
+  } catch (error: unknown) {
+    const isMissingVueCompiler = isNodeErrorWithCode(error, "MODULE_NOT_FOUND");
+
+    if (isMissingVueCompiler) {
+      throw new Error(
+        "Vue support requires optional dependency @vue/compiler-sfc. Install it with: npm install @vue/compiler-sfc",
+        {
+          cause: error,
+        },
+      );
+    }
+
+    throw error;
+  }
+}
+
+function collectScriptBlockImportSpecifiers(
+  filePath: string,
+  scriptBlocks: ScriptBlock[],
+): string[] {
+  const importSpecifiers = new Set<string>();
 
   for (const scriptBlock of scriptBlocks) {
-    const scriptImportSpecifiers = extractScriptBlockImportSpecifiers(
+    for (const importSpecifier of extractScriptBlockImportSpecifiers(
       filePath,
       scriptBlock.content,
       scriptBlock.lang,
-    );
-
-    for (const importSpecifier of scriptImportSpecifiers) {
+    )) {
       importSpecifiers.add(importSpecifier);
     }
   }
@@ -37,38 +118,32 @@ export function extractVueImportSpecifiers(
   return [...importSpecifiers];
 }
 
+function getScriptBlocks(descriptor: VueDescriptor): ScriptBlock[] {
+  return [descriptor.script, descriptor.scriptSetup].filter(
+    (scriptBlock): scriptBlock is ScriptBlock => scriptBlock !== null,
+  );
+}
+
+function isNodeErrorWithCode(error: unknown, code: string): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === code
+  );
+}
+
 function extractScriptBlockImportSpecifiers(
   filePath: string,
   sourceCode: string,
   language: string | undefined,
 ): string[] {
-  switch (language) {
-    case undefined:
-    case "js":
-      return extractImportSpecifiersFromJavaScript(
-        filePath,
-        sourceCode,
-        TypeScript.ScriptKind.JS,
-      );
-    case "jsx":
-      return extractImportSpecifiersFromJavaScript(
-        filePath,
-        sourceCode,
-        TypeScript.ScriptKind.JSX,
-      );
-    case "ts":
-      return extractImportSpecifiersFromTypeScript(
-        filePath,
-        sourceCode,
-        TypeScript.ScriptKind.TS,
-      );
-    case "tsx":
-      return extractImportSpecifiersFromTypeScript(
-        filePath,
-        sourceCode,
-        TypeScript.ScriptKind.TSX,
-      );
-    default:
-      return [];
+  const languageKey = language ?? "js";
+  const parser = SCRIPT_BLOCK_PARSERS[languageKey];
+
+  if (!parser) {
+    return [];
   }
+
+  return parser.extract(filePath, sourceCode, parser.scriptKind);
 }

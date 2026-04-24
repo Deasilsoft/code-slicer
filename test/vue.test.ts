@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
 import {
   getProjectFilePath,
@@ -191,6 +191,110 @@ describe("Vue traversal", () => {
         ).rejects.toThrow(
           `Failed to parse Vue file: ${getProjectFilePath(projectPath, "entry.vue")}`,
         );
+      },
+    );
+  });
+
+  it("throws an install hint when Vue compiler dependency is missing", async () => {
+    await withTestProject(
+      {
+        "entry.vue": '<script setup>\nimport "./dep";\n</script>\n',
+      },
+      async (projectPath) => {
+        vi.resetModules();
+
+        vi.doMock("node:module", async () => {
+          const nodeModule =
+            await vi.importActual<typeof import("node:module")>("node:module");
+          const realRequire = nodeModule.createRequire(import.meta.url);
+
+          return {
+            ...nodeModule,
+            createRequire: () => {
+              return ((moduleName: string) => {
+                if (moduleName === "@vue/compiler-sfc") {
+                  const missingModuleError = new Error(
+                    "Cannot find module '@vue/compiler-sfc'",
+                  ) as Error & { code?: string };
+
+                  missingModuleError.code = "MODULE_NOT_FOUND";
+
+                  throw missingModuleError;
+                }
+
+                return realRequire(moduleName);
+              }) as NodeJS.Require;
+            },
+          };
+        });
+
+        try {
+          const { collectDependencyFiles: collectDependencyFilesWithMock } =
+            await import("../src/domains/pipeline/index.js");
+
+          await expect(
+            collectDependencyFilesWithMock(
+              getProjectFilePath(projectPath, "entry.vue"),
+            ),
+          ).rejects.toThrow(
+            "Vue support requires optional dependency @vue/compiler-sfc. Install it with: npm install @vue/compiler-sfc",
+          );
+        } finally {
+          vi.doUnmock("node:module");
+          vi.resetModules();
+        }
+      },
+    );
+  });
+
+  it("rethrows non-missing-module errors when loading Vue compiler", async () => {
+    await withTestProject(
+      {
+        "entry.vue": '<script setup>\nimport "./dep";\n</script>\n',
+      },
+      async (projectPath) => {
+        vi.resetModules();
+
+        vi.doMock("node:module", async () => {
+          const nodeModule =
+            await vi.importActual<typeof import("node:module")>("node:module");
+          const realRequire = nodeModule.createRequire(import.meta.url);
+
+          return {
+            ...nodeModule,
+            createRequire: () => {
+              return ((moduleName: string) => {
+                if (moduleName === "@vue/compiler-sfc") {
+                  const permissionError = new Error(
+                    "Permission denied",
+                  ) as Error & {
+                    code?: string;
+                  };
+
+                  permissionError.code = "EACCES";
+
+                  throw permissionError;
+                }
+
+                return realRequire(moduleName);
+              }) as NodeJS.Require;
+            },
+          };
+        });
+
+        try {
+          const { collectDependencyFiles: collectDependencyFilesWithMock } =
+            await import("../src/domains/pipeline/index.js");
+
+          await expect(
+            collectDependencyFilesWithMock(
+              getProjectFilePath(projectPath, "entry.vue"),
+            ),
+          ).rejects.toThrow("Permission denied");
+        } finally {
+          vi.doUnmock("node:module");
+          vi.resetModules();
+        }
       },
     );
   });
