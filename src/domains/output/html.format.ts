@@ -9,10 +9,10 @@ export function renderHtml(files: ModuleFile[]): string {
       const escapedSourceCode = escapeXml(file.sourceCode);
 
       return [
-        '<section class="code-slicer-file">',
-        `  <h3>${escapedFilePath}</h3>`,
-        `  <pre><code>${escapedSourceCode}</code></pre>`,
-        `</section>`,
+        '    <section class="code-slicer-file">',
+        `      <h3>${escapedFilePath}</h3>`,
+        `      <pre><code>${escapedSourceCode}</code></pre>`,
+        `    </section>`,
       ].join("\n");
     })
     .join("\n");
@@ -26,10 +26,7 @@ export function renderHtml(files: ModuleFile[]): string {
     "</head>",
     "<body>",
     '  <main class="code-slicer-output">',
-    sections
-      .split("\n")
-      .map((line) => `    ${line}`)
-      .join("\n"),
+    sections,
     "  </main>",
     "</body>",
     "</html>",
