@@ -42,4 +42,3 @@ describe("Plain output format", () => {
     );
   });
 });
-

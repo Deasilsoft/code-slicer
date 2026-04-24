@@ -31,4 +31,3 @@ describe("XML output format", () => {
     );
   });
 });
-

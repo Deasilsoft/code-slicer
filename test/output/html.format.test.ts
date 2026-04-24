@@ -39,4 +39,3 @@ describe("HTML output format", () => {
     );
   });
 });
-
