@@ -141,8 +141,8 @@ code-slicer src/entrypoint.ts --format xml
 
 1. Detect file type (JavaScript, TypeScript, Vue)
 2. Parse source
-    - TypeScript AST for JS/TS/JSX/TSX
-    - Vue SFC parser for `.vue` files
+   - TypeScript AST for JS/TS/JSX/TSX
+   - Vue SFC parser for `.vue` files
 3. Extract imports (`import`, `export ... from`, `import()`)
 4. Resolve modules using TypeScript resolution with fallback logic
 5. Recursively traverse dependencies
