@@ -41,7 +41,7 @@ code-slicer src/entrypoint.ts
 
 ## Output format
 
-```
+```text
 relative/path/to/file.ts
 <source code>
 
@@ -86,32 +86,12 @@ Each file is printed as:
 - Minimal reproduction cases
 - Code review context extraction
 
-## Development
-
-```bash
-npm run dev
-npm run build
-npm run typecheck
-npm run lint
-npm run format
-```
-
 ## Contributing
 
-### Principles
+We welcome contributions.
 
-- Domain-Driven Design (DDD)
-- Clean Code:
-  - Small, focused functions
-  - Explicit naming
-  - No hidden side effects
-  - Clear separation of concerns
-
-### Expectations
-
-- Keep changes minimal and intentional
-- Avoid unnecessary abstractions
-- Preserve deterministic behavior
+Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the source of truth on process, coding standards, and testing
+expectations.
 
 ## License
 
