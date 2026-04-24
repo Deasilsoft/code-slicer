@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
+import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
 import {
   getProjectFilePath,
   getRelativeFilePaths,
   withTestProject,
-} from "./helpers/project.js";
+} from "../helpers/project.js";
 
-describe("Stylesheet traversal", () => {
+describe("Stylesheet file collection", () => {
   it.each(["css", "scss", "less"])(
     "includes explicitly imported .%s stylesheet files",
     async (extension) => {

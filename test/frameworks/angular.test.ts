@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
+import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
 import {
   getProjectFilePath,
   getRelativeFilePaths,
   withTestProject,
-} from "./helpers/project.js";
+} from "../helpers/project.js";
 
-describe("Angular traversal", () => {
+describe("Angular file collection", () => {
   it("collects TypeScript dependencies imported by a file with Angular component metadata", async () => {
     await withTestProject(
       {

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
+import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
+import { withWorkingDirectory } from "../helpers/cwd.js";
 import {
   getProjectFilePath,
   getRelativeFilePaths,
   withTestProject,
-} from "./helpers/project.js";
-import { withWorkingDirectory } from "./helpers/cwd.js";
+} from "../helpers/project.js";
 
-describe("JavaScript traversal", () => {
+describe("JavaScript file collection", () => {
   it("collects an ESM entry and its local dependency", async () => {
     await withTestProject(
       {
