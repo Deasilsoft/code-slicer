@@ -16,8 +16,6 @@ Closes #
 
 ## Validation
 
-Commands run in project CI order:
-
 - [ ] `npm run format:check`
 - [ ] `npm run lint`
 - [ ] `npm run typecheck`
