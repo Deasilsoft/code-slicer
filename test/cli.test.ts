@@ -40,6 +40,7 @@ type MockedCli = {
   action: ReturnType<typeof vi.fn>;
   command: ReturnType<typeof vi.fn>;
   help: ReturnType<typeof vi.fn>;
+  option: ReturnType<typeof vi.fn>;
   outputHelp: ReturnType<typeof vi.fn>;
   parse: ReturnType<typeof vi.fn>;
   runMatchedCommand: ReturnType<typeof vi.fn>;
@@ -55,7 +56,8 @@ async function withMockedCac(
   const outputHelp = vi.fn();
   const parse = vi.fn();
   const runMatchedCommand = vi.fn();
-  const command = vi.fn(() => ({ action }));
+  const option = vi.fn(() => ({ action }));
+  const command = vi.fn(() => ({ option }));
   const help = vi.fn();
   const version = vi.fn();
 
@@ -78,6 +80,7 @@ async function withMockedCac(
         action,
         command,
         help,
+        option,
         outputHelp,
         parse,
         runMatchedCommand,
@@ -92,7 +95,7 @@ async function withMockedCac(
 }
 
 describe("CLI behavior", () => {
-  it("outputs dependency file paths and contents when executed via the CLI", async () => {
+  it("outputs dependency file paths and contents in plain format by default", async () => {
     await withTestProject(
       {
         "entry.ts": 'import "./dep";\n',
@@ -117,7 +120,114 @@ describe("CLI behavior", () => {
         expect(dependencyHeaderIndex).toBeGreaterThan(entryHeaderIndex);
         expect(stdout).toContain('import "./dep";\n');
         expect(stdout).toContain('export const dep = "dep";\n');
+        expect(stdout).not.toContain("```\n");
+        expect(stdout.endsWith("\n")).toBe(true);
         expect(output.stderr()).toBe("");
+      },
+    );
+  });
+
+  it("outputs dependency files as markdown when requested", async () => {
+    await withTestProject(
+      {
+        "entry.ts": 'import "./dep";\n',
+        "dep.ts": 'export const dep = "dep";\n',
+      },
+      async (projectPath) => {
+        const output = captureStreams();
+
+        try {
+          await withWorkingDirectory(projectPath, async () => {
+            await main([
+              "node",
+              "code-slicer",
+              "entry.ts",
+              "--format",
+              "markdown",
+            ]);
+          });
+        } finally {
+          output.restore();
+        }
+
+        const stdout = output.stdout();
+        const entryHeaderIndex = stdout.indexOf("### entry.ts\n");
+        const dependencyHeaderIndex = stdout.indexOf("### dep.ts\n");
+
+        expect(entryHeaderIndex).toBeGreaterThanOrEqual(0);
+        expect(dependencyHeaderIndex).toBeGreaterThan(entryHeaderIndex);
+        expect(stdout).toContain("```\n");
+        expect(stdout).toContain('import "./dep";\n');
+        expect(stdout).toContain('export const dep = "dep";\n');
+        expect(stdout).toContain("\n```\n\n### dep.ts");
+        expect(output.stderr()).toBe("");
+      },
+    );
+  });
+
+  it("outputs dependency files as html when requested", async () => {
+    await withTestProject(
+      {
+        "entry.ts": 'export const html = "<tag>";\n',
+      },
+      async (projectPath) => {
+        const output = captureStreams();
+
+        try {
+          await withWorkingDirectory(projectPath, async () => {
+            await main(["node", "code-slicer", "entry.ts", "--format", "html"]);
+          });
+        } finally {
+          output.restore();
+        }
+
+        expect(output.stdout()).toContain("<!DOCTYPE html>");
+        expect(output.stdout()).toContain('<html lang="en">');
+        expect(output.stdout()).toContain(
+          '  <main class="code-slicer-output">',
+        );
+        expect(output.stdout()).toContain("&lt;tag&gt;");
+        expect(output.stderr()).toBe("");
+      },
+    );
+  });
+
+  it("outputs dependency files as xml when requested", async () => {
+    await withTestProject(
+      {
+        "entry.ts": "export const xml = '<tag>';\n",
+      },
+      async (projectPath) => {
+        const output = captureStreams();
+
+        try {
+          await withWorkingDirectory(projectPath, async () => {
+            await main(["node", "code-slicer", "entry.ts", "--format", "xml"]);
+          });
+        } finally {
+          output.restore();
+        }
+
+        expect(output.stdout()).toContain(
+          '<?xml version="1.0" encoding="UTF-8"?>',
+        );
+        expect(output.stdout()).toContain("&lt;tag&gt;");
+        expect(output.stderr()).toBe("");
+      },
+    );
+  });
+
+  it("throws an error when an unsupported output format is provided", async () => {
+    await withTestProject(
+      {
+        "entry.ts": 'export const entry = "entry";\n',
+      },
+      async (projectPath) => {
+        await expect(
+          withWorkingDirectory(projectPath, async () => {
+            await main(["node", "code-slicer", "entry.ts", "--format", "json"]);
+          }),
+        ).rejects.toThrow("Unsupported output format: json");
       },
     );
   });
@@ -140,7 +250,14 @@ describe("CLI wiring", () => {
 
       expect(cli.command).toHaveBeenCalledWith(
         "<file-path>",
-        "Collect local dependency files and output their paths and source code",
+        "Collect local dependency files and output them in the selected format",
+      );
+      expect(cli.option).toHaveBeenCalledWith(
+        "--format <format>",
+        "Output format (plain, markdown, html, xml)",
+        {
+          default: "plain",
+        },
       );
       expect(cli.action).toHaveBeenCalledOnce();
       expect(cli.help).toHaveBeenCalledOnce();
