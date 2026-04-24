@@ -84,7 +84,9 @@ function getVueSfcParse(): VueSfcParse {
 
     return vueSfcParse;
   } catch (error: unknown) {
-    const isMissingVueCompiler = isNodeErrorWithCode(error, "MODULE_NOT_FOUND");
+    const isMissingVueCompiler =
+      isNodeErrorWithCode(error, "MODULE_NOT_FOUND") &&
+      isErrorMessageContaining(error, "@vue/compiler-sfc");
 
     if (isMissingVueCompiler) {
       throw new Error(
@@ -130,6 +132,16 @@ function isNodeErrorWithCode(error: unknown, code: string): boolean {
     error !== null &&
     "code" in error &&
     error.code === code
+  );
+}
+
+function isErrorMessageContaining(error: unknown, text: string): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string" &&
+    error.message.includes(text)
   );
 }
 
