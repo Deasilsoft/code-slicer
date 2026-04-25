@@ -34,7 +34,7 @@
     "postbuild": "chmod +x dist/entrypoint.js",
     "clean": "npm run clean:install && npm run clean:package",
     "preclean:install": "rm -rf node_modules package-lock.json",
-    "clean:install": "npm install --include=optional",
+    "clean:install": "npm install",
     "clean:package": "rm -rf dist coverage",
     "dev": "tsx src/entrypoint.ts",
     "format": "prettier . --write",
