@@ -33,7 +33,7 @@ npm run build
 If you experience issues with `npm ci`:
 
 ```bash
-npm run deps:reset
+npm run clean:install
 ```
 
 ## Code expectations

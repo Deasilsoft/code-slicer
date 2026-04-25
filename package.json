@@ -32,9 +32,10 @@
   "scripts": {
     "build": "tsc",
     "postbuild": "chmod +x dist/entrypoint.js",
-    "clean": "rm -rf dist",
-    "predeps:reset": "rm -rf node_modules package-lock.json",
-    "deps:reset": "npm install --include=optional",
+    "clean": "npm run clean:install && npm run clean:package",
+    "preclean:install": "rm -rf node_modules package-lock.json",
+    "clean:install": "npm install",
+    "clean:package": "rm -rf dist coverage",
     "dev": "tsx src/entrypoint.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
