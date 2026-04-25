@@ -1,23 +1,33 @@
 import { vi } from "vitest";
 
+function decodeChunk(chunk: unknown): string {
+  if (typeof chunk === "string") {
+    return chunk;
+  }
+
+  if (chunk instanceof Uint8Array) {
+    return Buffer.from(chunk).toString("utf8");
+  }
+
+  return String(chunk);
+}
+
 export function captureStreams() {
   let stdout = "";
   let stderr = "";
 
   const stdoutSpy = vi
     .spyOn(process.stdout, "write")
-    .mockImplementation((chunk: string | Uint8Array) => {
-      stdout +=
-        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8");
+    .mockImplementation((chunk: unknown) => {
+      stdout += decodeChunk(chunk);
 
       return true;
     });
 
   const stderrSpy = vi
     .spyOn(process.stderr, "write")
-    .mockImplementation((chunk: string | Uint8Array) => {
-      stderr +=
-        typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8");
+    .mockImplementation((chunk: unknown) => {
+      stderr += decodeChunk(chunk);
 
       return true;
     });

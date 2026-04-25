@@ -1,14 +1,11 @@
+import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
-import {
-  getProjectFilePath,
-  getRelativeFilePaths,
-  withTestProject,
-} from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 describe("Angular file collection", () => {
   it("collects TypeScript dependencies imported by a file with Angular component metadata", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts":
           'import { AppComponent } from "./app.component";\nvoid AppComponent;\n',
@@ -27,16 +24,14 @@ describe("Angular file collection", () => {
         "app.component.html": "<p>Hello</p>\n",
         "app.component.scss": "p { color: red; }\n",
       },
-      async (projectPath) => {
-        const files = await collectDependencyFiles(
-          getProjectFilePath(projectPath, "entry.ts"),
-        );
+      async (project) => {
+        const files = await collectDependencyFiles(project.path("entry.ts"));
 
-        expect(getRelativeFilePaths(projectPath, files)).toEqual([
-          "entry.ts",
-          "app.component.ts",
-          "helper.ts",
-        ]);
+        expect(
+          files.map(({ filePath }) =>
+            NodePath.relative(project.root, filePath),
+          ),
+        ).toEqual(["entry.ts", "app.component.ts", "helper.ts"]);
       },
     );
   });

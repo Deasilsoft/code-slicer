@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import pkg from "../package.json" with { type: "json" };
 import { main } from "../src/main.js";
 import { withWorkingDirectory } from "./helpers/cwd.js";
-import { withTestProject } from "./helpers/project.js";
+import { withProject } from "./helpers/project.js";
 import { captureStreams } from "./helpers/streams.js";
 
 type MockedCli = {
@@ -65,16 +65,16 @@ async function withMockedCac(
 
 describe("CLI behavior", () => {
   it("outputs dependency file paths and contents in plain format by default", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "./dep";\n',
         "dep.ts": 'export const dep = "dep";\n',
       },
-      async (projectPath) => {
+      async (project) => {
         const output = captureStreams();
 
         try {
-          await withWorkingDirectory(projectPath, async () => {
+          await withWorkingDirectory(project.root, async () => {
             await main(["node", "code-slicer", "entry.ts"]);
           });
         } finally {
@@ -97,16 +97,16 @@ describe("CLI behavior", () => {
   });
 
   it("outputs dependency files as markdown when requested", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "./dep";\n',
         "dep.ts": 'export const dep = "dep";\n',
       },
-      async (projectPath) => {
+      async (project) => {
         const output = captureStreams();
 
         try {
-          await withWorkingDirectory(projectPath, async () => {
+          await withWorkingDirectory(project.root, async () => {
             await main([
               "node",
               "code-slicer",
@@ -135,15 +135,15 @@ describe("CLI behavior", () => {
   });
 
   it("outputs dependency files as html when requested", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'export const html = "<tag>";\n',
       },
-      async (projectPath) => {
+      async (project) => {
         const output = captureStreams();
 
         try {
-          await withWorkingDirectory(projectPath, async () => {
+          await withWorkingDirectory(project.root, async () => {
             await main(["node", "code-slicer", "entry.ts", "--format", "html"]);
           });
         } finally {
@@ -162,15 +162,15 @@ describe("CLI behavior", () => {
   });
 
   it("outputs dependency files as xml when requested", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": "export const xml = '<tag>';\n",
       },
-      async (projectPath) => {
+      async (project) => {
         const output = captureStreams();
 
         try {
-          await withWorkingDirectory(projectPath, async () => {
+          await withWorkingDirectory(project.root, async () => {
             await main(["node", "code-slicer", "entry.ts", "--format", "xml"]);
           });
         } finally {

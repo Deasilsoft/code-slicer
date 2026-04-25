@@ -1,10 +1,7 @@
+import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { collectDependencyFiles } from "../src/domains/pipeline/index.js";
-import {
-  getProjectFilePath,
-  getRelativeFilePaths,
-  withTestProject,
-} from "./helpers/project.js";
+import { withProject } from "./helpers/project.js";
 
 describe("Dependency collection", () => {
   it.each([
@@ -16,20 +13,19 @@ describe("Dependency collection", () => {
     async (extension, baseName, sourceCode) => {
       const assetFileName = `${baseName}.${extension}`;
 
-      await withTestProject(
+      await withProject(
         {
           "entry.ts": `import "./${assetFileName}";\n`,
           [assetFileName]: sourceCode,
         },
-        async (projectPath) => {
-          const files = await collectDependencyFiles(
-            getProjectFilePath(projectPath, "entry.ts"),
-          );
+        async (project) => {
+          const files = await collectDependencyFiles(project.path("entry.ts"));
 
-          expect(getRelativeFilePaths(projectPath, files)).toEqual([
-            "entry.ts",
-            assetFileName,
-          ]);
+          expect(
+            files.map(({ filePath }) =>
+              NodePath.relative(project.root, filePath),
+            ),
+          ).toEqual(["entry.ts", assetFileName]);
         },
       );
     },

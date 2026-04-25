@@ -1,18 +1,18 @@
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderCollectedFiles } from "../../src/domains/output/formatter.js";
-import { withTestProject } from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 describe("Plain output format", () => {
   it("renders plain output by default", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "./dep";\n',
         "dep.ts": 'export const dep = "dep";\n',
       },
-      async (projectPath) => {
-        const entryFilePath = NodePath.join(projectPath, "entry.ts");
-        const dependencyFilePath = NodePath.join(projectPath, "dep.ts");
+      async (project) => {
+        const entryFilePath = NodePath.join(project.root, "entry.ts");
+        const dependencyFilePath = NodePath.join(project.root, "dep.ts");
         const entryHeading =
           NodePath.relative(process.cwd(), entryFilePath) || entryFilePath;
         const dependencyHeading =

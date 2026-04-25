@@ -1,16 +1,16 @@
 import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderCollectedFiles } from "../../src/domains/output/formatter.js";
-import { withTestProject } from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 describe("HTML output format", () => {
   it("renders html sections with escaped content", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'export const html = "<tag> & value";\n',
       },
-      async (projectPath) => {
-        const entryFilePath = NodePath.join(projectPath, "entry.ts");
+      async (project) => {
+        const entryFilePath = NodePath.join(project.root, "entry.ts");
         const entryHeading =
           NodePath.relative(process.cwd(), entryFilePath) || entryFilePath;
 

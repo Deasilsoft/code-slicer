@@ -1,7 +1,7 @@
 import TypeScript from "typescript";
 import { describe, expect, it } from "vitest";
 import { resolveImportFilePath } from "../src/domains/pipeline/resolver.js";
-import { getProjectFilePath, withTestProject } from "./helpers/project.js";
+import { withProject } from "./helpers/project.js";
 
 const compilerOptions: TypeScript.CompilerOptions = {
   module: TypeScript.ModuleKind.NodeNext,
@@ -10,7 +10,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 
 describe("Import resolver", () => {
   it("drops imports resolved to node_modules", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "example-pkg";\n',
         "node_modules/example-pkg/package.json":
@@ -18,10 +18,10 @@ describe("Import resolver", () => {
         "node_modules/example-pkg/index.js":
           'export const value = "external";\n',
       },
-      async (projectPath) => {
+      async (project) => {
         const resolvedPath = await resolveImportFilePath(
           "example-pkg",
-          getProjectFilePath(projectPath, "entry.ts"),
+          project.path("entry.ts"),
           compilerOptions,
         );
 
@@ -31,14 +31,14 @@ describe("Import resolver", () => {
   });
 
   it("falls back to candidate file search when TypeScript resolution misses", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "./dep";\n',
         "dep.cjs": 'module.exports = { dep: "dep" };\n',
       },
-      async (projectPath) => {
-        const fromFilePath = getProjectFilePath(projectPath, "entry.ts");
-        const depFilePath = getProjectFilePath(projectPath, "dep.cjs");
+      async (project) => {
+        const fromFilePath = project.path("entry.ts");
+        const depFilePath = project.path("dep.cjs");
 
         const resolvedByTypeScript =
           TypeScript.resolveModuleName(
@@ -62,13 +62,13 @@ describe("Import resolver", () => {
   });
 
   it("ignores fallback resolutions that resolve to files inside node_modules", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.ts": 'import "./node_modules/example-pkg";\n',
         "node_modules/example-pkg/index.vue": "<template><div /></template>\n",
       },
-      async (projectPath) => {
-        const fromFilePath = getProjectFilePath(projectPath, "entry.ts");
+      async (project) => {
+        const fromFilePath = project.path("entry.ts");
 
         const resolvedByTypeScript =
           TypeScript.resolveModuleName(
