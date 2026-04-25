@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
-import { getProjectFilePath, withTestProject } from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 type MockedCompilerErrorCase = {
   expected: string | RegExp;
@@ -10,15 +10,15 @@ type MockedCompilerErrorCase = {
 
 describe("Vue file collection errors", () => {
   it("throws when the Vue file cannot be parsed", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.vue": "<script setup>\n",
       },
-      async (projectPath) => {
+      async (project) => {
         await expect(
-          collectDependencyFiles(getProjectFilePath(projectPath, "entry.vue")),
+          collectDependencyFiles(project.path("entry.vue")),
         ).rejects.toThrow(
-          `Failed to parse Vue file: ${getProjectFilePath(projectPath, "entry.vue")}`,
+          `Failed to parse Vue file: ${project.path("entry.vue")}`,
         );
       },
     );
@@ -70,11 +70,11 @@ describe("Vue file collection errors", () => {
       thrown: "unexpected",
     },
   ])("handles compiler load failure %#", async ({ thrown, mode, expected }) => {
-    await withTestProject(
+    await withProject(
       {
         "entry.vue": '<script setup>\nimport "./dep";\n</script>\n',
       },
-      async (projectPath) => {
+      async (project) => {
         vi.resetModules();
 
         vi.doMock("node:module", async () => {
@@ -100,9 +100,7 @@ describe("Vue file collection errors", () => {
           const { collectDependencyFiles: collectDependencyFilesWithMock } =
             await import("../../src/domains/pipeline/index.js");
 
-          const run = collectDependencyFilesWithMock(
-            getProjectFilePath(projectPath, "entry.vue"),
-          );
+          const run = collectDependencyFilesWithMock(project.path("entry.vue"));
 
           if (mode === "toThrow") {
             await expect(run).rejects.toThrow(expected);

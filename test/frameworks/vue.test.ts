@@ -1,24 +1,23 @@
+import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
-import {
-  getProjectFilePath,
-  getRelativeFilePaths,
-  withTestProject,
-} from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 describe("Vue file collection", () => {
   async function expectCollectedFiles(
     files: Record<string, string>,
     expected: string[],
   ): Promise<void> {
-    await withTestProject(files, async (projectPath) => {
+    await withProject(files, async (project) => {
       const collectedFiles = await collectDependencyFiles(
-        getProjectFilePath(projectPath, "entry.vue"),
+        project.path("entry.vue"),
       );
 
-      expect(getRelativeFilePaths(projectPath, collectedFiles)).toEqual(
-        expected,
-      );
+      expect(
+        collectedFiles.map(({ filePath }) =>
+          NodePath.relative(project.root, filePath),
+        ),
+      ).toEqual(expected);
     });
   }
 

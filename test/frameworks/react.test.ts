@@ -1,48 +1,43 @@
+import NodePath from "node:path";
 import { describe, expect, it } from "vitest";
 import { collectDependencyFiles } from "../../src/domains/pipeline/index.js";
-import {
-  getProjectFilePath,
-  getRelativeFilePaths,
-  withTestProject,
-} from "../helpers/project.js";
+import { withProject } from "../helpers/project.js";
 
 describe("React file collection", () => {
   it("collects dependencies from a JSX entry", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.jsx":
           'import { dep } from "./dep.js";\nexport function App() {\n  return <div>{dep}</div>;\n}\n',
         "dep.js": 'export const dep = "jsx";\n',
       },
-      async (projectPath) => {
-        const files = await collectDependencyFiles(
-          getProjectFilePath(projectPath, "entry.jsx"),
-        );
+      async (project) => {
+        const files = await collectDependencyFiles(project.path("entry.jsx"));
 
-        expect(getRelativeFilePaths(projectPath, files)).toEqual([
-          "entry.jsx",
-          "dep.js",
-        ]);
+        expect(
+          files.map(({ filePath }) =>
+            NodePath.relative(project.root, filePath),
+          ),
+        ).toEqual(["entry.jsx", "dep.js"]);
       },
     );
   });
 
   it("collects dependencies from a TSX entry", async () => {
-    await withTestProject(
+    await withProject(
       {
         "entry.tsx":
           'import { dep } from "./dep";\nexport function App() {\n  return <div>{dep}</div>;\n}\n',
         "dep.ts": 'export const dep = "tsx";\n',
       },
-      async (projectPath) => {
-        const files = await collectDependencyFiles(
-          getProjectFilePath(projectPath, "entry.tsx"),
-        );
+      async (project) => {
+        const files = await collectDependencyFiles(project.path("entry.tsx"));
 
-        expect(getRelativeFilePaths(projectPath, files)).toEqual([
-          "entry.tsx",
-          "dep.ts",
-        ]);
+        expect(
+          files.map(({ filePath }) =>
+            NodePath.relative(project.root, filePath),
+          ),
+        ).toEqual(["entry.tsx", "dep.ts"]);
       },
     );
   });

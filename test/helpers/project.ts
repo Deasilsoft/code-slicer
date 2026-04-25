@@ -1,40 +1,48 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import NodeFS from "node:fs/promises";
+import NodeOS from "node:os";
 import NodePath from "node:path";
-import type { ModuleFile } from "../../src/domains/pipeline/types.js";
+import pkg from "../../package.json" with { type: "json" };
 
-export async function withTestProject(
+type ProjectContext = {
+  root: string;
+  path: (relativeFilePath: string) => string;
+  chdir: () => void;
+};
+
+export async function withProject<T>(
   files: Record<string, string>,
-  run: (projectPath: string) => Promise<void>,
-): Promise<void> {
-  const projectPath = await mkdtemp(
-    NodePath.join(tmpdir(), "code-slicer-test-"),
+  run: (project: ProjectContext) => Promise<T>,
+): Promise<T> {
+  const initialCwd = process.cwd();
+  const root = await NodeFS.realpath(
+    await NodeFS.mkdtemp(NodePath.join(NodeOS.tmpdir(), `${pkg.name}-`)),
   );
 
-  try {
-    for (const [relativeFilePath, sourceCode] of Object.entries(files)) {
-      const filePath = NodePath.join(projectPath, relativeFilePath);
+  const project: ProjectContext = {
+    root,
+    path: (relativeFilePath) => {
+      if (NodePath.isAbsolute(relativeFilePath)) {
+        throw new Error("Project file path must be relative");
+      }
 
-      await mkdir(NodePath.dirname(filePath), { recursive: true });
-      await writeFile(filePath, sourceCode);
+      return NodePath.join(root, relativeFilePath);
+    },
+    chdir: () => {
+      process.chdir(root);
+    },
+  };
+
+  try {
+    for (const [relativeFilePath, content] of Object.entries(files)) {
+      const filePath = project.path(relativeFilePath);
+
+      await NodeFS.mkdir(NodePath.dirname(filePath), { recursive: true });
+      await NodeFS.writeFile(filePath, content, "utf8");
     }
 
-    await run(projectPath);
+    return await run(project);
   } finally {
-    await rm(projectPath, { recursive: true, force: true });
+    process.chdir(initialCwd);
+    await NodeFS.rm(root, { recursive: true, force: true });
   }
-}
-
-export function getProjectFilePath(
-  projectPath: string,
-  relativeFilePath: string,
-): string {
-  return NodePath.join(projectPath, relativeFilePath);
-}
-
-export function getRelativeFilePaths(
-  projectPath: string,
-  files: ModuleFile[],
-): string[] {
-  return files.map((file) => NodePath.relative(projectPath, file.filePath));
 }
