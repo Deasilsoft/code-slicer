@@ -43,13 +43,12 @@ export async function resolveImportFilePath(
   fromFilePath: string,
   compilerOptions: TypeScript.CompilerOptions,
 ): Promise<string | undefined> {
-  const resolvedWithTypeScript =
-    TypeScript.resolveModuleName(
-      importSpecifier,
-      fromFilePath,
-      compilerOptions,
-      TypeScript.sys,
-    ).resolvedModule?.resolvedFileName ?? undefined;
+  const resolvedWithTypeScript = TypeScript.resolveModuleName(
+    importSpecifier,
+    fromFilePath,
+    compilerOptions,
+    TypeScript.sys,
+  ).resolvedModule?.resolvedFileName;
 
   if (resolvedWithTypeScript) {
     const normalizedResolvedFilePath = NodePath.normalize(
