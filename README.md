@@ -33,7 +33,7 @@ code-slicer <entry-file> --format <plain|markdown|html|xml>
 ### Example
 
 ```bash
-code-slicer src/entrypoint.ts
+code-slicer src/bin.ts
 ```
 
 ## What it does
@@ -57,7 +57,7 @@ Supported formats:
 ### Plain (default)
 
 ```bash
-code-slicer src/entrypoint.ts
+code-slicer src/bin.ts
 ```
 
 ```text
@@ -71,7 +71,7 @@ relative/path/to/another-file.ts
 ### Markdown
 
 ```bash
-code-slicer src/entrypoint.ts --format markdown
+code-slicer src/bin.ts --format markdown
 ```
 
 ````text
@@ -91,7 +91,7 @@ code-slicer src/entrypoint.ts --format markdown
 ### HTML
 
 ```bash
-code-slicer src/entrypoint.ts --format html
+code-slicer src/bin.ts --format html
 ```
 
 ```text
@@ -115,7 +115,7 @@ code-slicer src/entrypoint.ts --format html
 ### XML
 
 ```bash
-code-slicer src/entrypoint.ts --format xml
+code-slicer src/bin.ts --format xml
 ```
 
 ```text

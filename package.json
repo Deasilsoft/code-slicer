@@ -24,19 +24,19 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "code-slicer": "./dist/entrypoint.js"
+    "code-slicer": "./dist/bin.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "postbuild": "chmod +x dist/entrypoint.js",
+    "postbuild": "chmod +x dist/bin.js",
     "clean": "npm run clean:install && npm run clean:package",
     "preclean:install": "rm -rf node_modules package-lock.json",
     "clean:install": "npm install",
     "clean:package": "rm -rf dist coverage",
-    "dev": "tsx src/entrypoint.ts",
+    "dev": "tsx src/bin.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "knip": "knip",
