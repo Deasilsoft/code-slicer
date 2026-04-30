@@ -41,8 +41,8 @@
     "format:check": "prettier . --check",
     "knip": "knip",
     "lint": "eslint .",
-    "prepack": "npm run clean:package && npm run build",
     "lint:fix": "eslint . --fix",
+    "prepack": "npm run clean:package && npm run build",
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
