@@ -25,7 +25,7 @@ describe("Import resolver", () => {
           compilerOptions,
         );
 
-        expect(resolvedPath).toBeNull();
+        expect(resolvedPath).toBeUndefined();
       },
     );
   });
@@ -40,15 +40,14 @@ describe("Import resolver", () => {
         const fromFilePath = project.path("entry.ts");
         const depFilePath = project.path("dep.cjs");
 
-        const resolvedByTypeScript =
-          TypeScript.resolveModuleName(
-            "./dep",
-            fromFilePath,
-            compilerOptions,
-            TypeScript.sys,
-          ).resolvedModule?.resolvedFileName ?? null;
+        const resolvedByTypeScript = TypeScript.resolveModuleName(
+          "./dep",
+          fromFilePath,
+          compilerOptions,
+          TypeScript.sys,
+        ).resolvedModule?.resolvedFileName;
 
-        expect(resolvedByTypeScript).toBeNull();
+        expect(resolvedByTypeScript).toBeUndefined();
 
         const resolvedPath = await resolveImportFilePath(
           "./dep",
@@ -70,15 +69,14 @@ describe("Import resolver", () => {
       async (project) => {
         const fromFilePath = project.path("entry.ts");
 
-        const resolvedByTypeScript =
-          TypeScript.resolveModuleName(
-            "./node_modules/example-pkg",
-            fromFilePath,
-            compilerOptions,
-            TypeScript.sys,
-          ).resolvedModule?.resolvedFileName ?? null;
+        const resolvedByTypeScript = TypeScript.resolveModuleName(
+          "./node_modules/example-pkg",
+          fromFilePath,
+          compilerOptions,
+          TypeScript.sys,
+        ).resolvedModule?.resolvedFileName;
 
-        expect(resolvedByTypeScript).toBeNull();
+        expect(resolvedByTypeScript).toBeUndefined();
 
         const resolvedPath = await resolveImportFilePath(
           "./node_modules/example-pkg",
@@ -86,7 +84,7 @@ describe("Import resolver", () => {
           compilerOptions,
         );
 
-        expect(resolvedPath).toBeNull();
+        expect(resolvedPath).toBeUndefined();
       },
     );
   });

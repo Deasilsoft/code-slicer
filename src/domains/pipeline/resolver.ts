@@ -19,9 +19,7 @@ function isFileSpecifier(importSpecifier: string): boolean {
 }
 
 function getCandidateFilePaths(baseFilePath: string): string[] {
-  const candidateFilePaths = new Set<string>();
-
-  candidateFilePaths.add(baseFilePath);
+  const candidateFilePaths = new Set<string>([baseFilePath]);
 
   for (const extension of SUPPORTED_EXTENSIONS) {
     candidateFilePaths.add(`${baseFilePath}${extension}`);
@@ -44,14 +42,13 @@ export async function resolveImportFilePath(
   importSpecifier: string,
   fromFilePath: string,
   compilerOptions: TypeScript.CompilerOptions,
-): Promise<string | null> {
-  const resolvedWithTypeScript =
-    TypeScript.resolveModuleName(
-      importSpecifier,
-      fromFilePath,
-      compilerOptions,
-      TypeScript.sys,
-    ).resolvedModule?.resolvedFileName ?? null;
+): Promise<string | undefined> {
+  const resolvedWithTypeScript = TypeScript.resolveModuleName(
+    importSpecifier,
+    fromFilePath,
+    compilerOptions,
+    TypeScript.sys,
+  ).resolvedModule?.resolvedFileName;
 
   if (resolvedWithTypeScript) {
     const normalizedResolvedFilePath = NodePath.normalize(
@@ -59,14 +56,14 @@ export async function resolveImportFilePath(
     );
 
     if (isInsideNodeModules(normalizedResolvedFilePath)) {
-      return null;
+      return undefined;
     }
 
     return normalizedResolvedFilePath;
   }
 
   if (!isFileSpecifier(importSpecifier)) {
-    return null;
+    return undefined;
   }
 
   const baseFilePath = NodePath.resolve(
@@ -82,11 +79,11 @@ export async function resolveImportFilePath(
     const normalizedCandidateFilePath = NodePath.normalize(candidateFilePath);
 
     if (isInsideNodeModules(normalizedCandidateFilePath)) {
-      return null;
+      return undefined;
     }
 
     return normalizedCandidateFilePath;
   }
 
-  return null;
+  return undefined;
 }

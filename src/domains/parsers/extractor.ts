@@ -8,13 +8,17 @@ export function extractImportSpecifiers(
   sourceCode: string,
 ): string[] {
   switch (getParserType(filePath)) {
-    case "javascript":
+    case "javascript": {
       return extractJavaScriptImportSpecifiers(filePath, sourceCode);
-    case "typescript":
+    }
+    case "typescript": {
       return extractTypeScriptImportSpecifiers(filePath, sourceCode);
-    case "vue":
+    }
+    case "vue": {
       return extractVueImportSpecifiers(filePath, sourceCode);
-    case "unknown":
+    }
+    case "unknown": {
       return [];
+    }
   }
 }

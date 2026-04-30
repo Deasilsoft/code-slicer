@@ -7,16 +7,20 @@ export function getParserType(filePath: string): ParserType {
     case ".js":
     case ".mjs":
     case ".cjs":
-    case ".jsx":
+    case ".jsx": {
       return "javascript";
+    }
     case ".ts":
     case ".mts":
     case ".cts":
-    case ".tsx":
+    case ".tsx": {
       return "typescript";
-    case ".vue":
+    }
+    case ".vue": {
       return "vue";
-    default:
+    }
+    default: {
       return "unknown";
+    }
   }
 }

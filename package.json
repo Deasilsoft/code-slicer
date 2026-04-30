@@ -24,24 +24,25 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "code-slicer": "./dist/entrypoint.js"
+    "code-slicer": "./dist/bin.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "postbuild": "chmod +x dist/entrypoint.js",
+    "postbuild": "chmod +x dist/bin.js",
     "clean": "npm run clean:install && npm run clean:package",
     "preclean:install": "rm -rf node_modules package-lock.json",
     "clean:install": "npm install",
     "clean:package": "rm -rf dist coverage",
-    "dev": "tsx src/entrypoint.ts",
+    "dev": "tsx src/bin.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "knip": "knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "prepack": "npm run clean:package && npm run build",
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
@@ -55,11 +56,12 @@
     "@vitest/coverage-v8": "^4.1.5",
     "@vue/compiler-sfc": "^3.5.33",
     "eslint": "^10.2.1",
-    "knip": "^6.6.3",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "knip": "^6.9.0",
     "prettier": "^3.8.3",
     "prettier-plugin-packagejson": "^3.0.2",
     "tsx": "^4.21.0",
-    "typescript-eslint": "^8.59.0",
+    "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5"
   },
   "engines": {

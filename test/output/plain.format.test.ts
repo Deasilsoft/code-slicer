@@ -19,19 +19,16 @@ describe("Plain output format", () => {
           NodePath.relative(process.cwd(), dependencyFilePath) ||
           dependencyFilePath;
 
-        const output = renderCollectedFiles(
-          [
-            {
-              filePath: entryFilePath,
-              sourceCode: 'import "./dep";\n',
-            },
-            {
-              filePath: dependencyFilePath,
-              sourceCode: 'export const dep = "dep";\n',
-            },
-          ],
-          undefined,
-        );
+        const output = renderCollectedFiles([
+          {
+            filePath: entryFilePath,
+            sourceCode: 'import "./dep";\n',
+          },
+          {
+            filePath: dependencyFilePath,
+            sourceCode: 'export const dep = "dep";\n',
+          },
+        ]);
 
         expect(output).toContain(`${entryHeading}\nimport "./dep";\n`);
         expect(output).toContain(
