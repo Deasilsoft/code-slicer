@@ -17,12 +17,12 @@ const SUPPORTED_OUTPUT_FORMATS = Object.keys(RENDERERS) as OutputFormat[];
 
 export function renderCollectedFiles(
   files: ModuleFile[],
-  format: string | undefined,
+  format?: string,
 ): string {
   return RENDERERS[toOutputFormat(format)](files);
 }
 
-function toOutputFormat(format: string | undefined): OutputFormat {
+function toOutputFormat(format?: string): OutputFormat {
   const normalizedFormat = format ?? "plain";
 
   if (isOutputFormat(normalizedFormat)) {

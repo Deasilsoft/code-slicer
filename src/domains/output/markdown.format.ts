@@ -5,7 +5,7 @@ export function renderMarkdown(files: ModuleFile[]): string {
   return files
     .map((file) => {
       const relativeFilePath = getRelativeFilePath(file.filePath);
-      const fence = getMarkdownFence(file.sourceCode);
+      const fence = getMarkdownCodeFence(file.sourceCode);
 
       return [
         `### ${relativeFilePath}`,
@@ -18,12 +18,12 @@ export function renderMarkdown(files: ModuleFile[]): string {
     .join("\n\n");
 }
 
-function getMarkdownFence(sourceCode: string): string {
-  const backtickRuns = sourceCode.match(/`+/g) ?? [];
-  const longestRun = backtickRuns.reduce(
-    (max, run) => Math.max(max, run.length),
-    0,
-  );
+function getMarkdownCodeFence(sourceCode: string): string {
+  let longestRun = 0;
+
+  for (const run of sourceCode.match(/`+/g) ?? []) {
+    longestRun = Math.max(longestRun, run.length);
+  }
 
   return "`".repeat(Math.max(3, longestRun + 1));
 }

@@ -1,6 +1,8 @@
 # Contributing
 
-This document defines how to contribute to `code-slicer`.
+This document explains how to contribute to `code-slicer`.
+
+By participating, you agree to follow the [Code of Conduct](CODE-OF-CONDUCT.md).
 
 ## Workflow
 
@@ -10,7 +12,8 @@ Use a simple flow: **Issue → PR to `main`**.
 2. Create a focused branch or fork.
 3. Open a PR to `main` and link the issue.
 
-Small fixes do not require an issue. Discuss larger changes before implementation.
+Small fixes do not require an issue. Discuss larger changes before
+implementation.
 
 ## Local setup and checks
 
@@ -30,11 +33,13 @@ npm test
 npm run build
 ```
 
-If you experience issues with `npm ci`:
+If you experience dependency install issues:
 
 ```bash
 npm run clean:install
 ```
+
+Do not commit generated dependency changes unless they are intentional.
 
 ## Code expectations
 
@@ -62,6 +67,15 @@ docs: add contributing guide
 GitHub auto-loads the PR checklist from `.github/pull_request_template.md`.
 Complete that template when opening or updating a PR.
 
+PRs should be focused, include relevant tests, and avoid unrelated formatting or
+refactors unless explicitly discussed.
+
+## Security and sensitive reports
+
+Report vulnerabilities, private data exposure, or other security-sensitive
+issues according to the [Security Policy](SECURITY.md).
+
 ## Review focus
 
-Maintainers review for correctness, simplicity, test quality, and alignment with project expectations.
+Maintainers review for correctness, simplicity, test quality, and alignment with
+project expectations.

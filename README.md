@@ -5,10 +5,12 @@
 [![Code Coverage](https://codecov.io/gh/Deasilsoft/code-slicer/graph/badge.svg)](https://codecov.io/gh/Deasilsoft/code-slicer)
 [![Socket](https://badge.socket.dev/npm/package/code-slicer)](https://socket.dev/npm/package/code-slicer)
 
-Extract minimal, dependency-aware code context from an entry file for use in AI prompts.
+Extract minimal, dependency-aware code context from an entry file for use in AI
+prompts.
 
-`code-slicer` is a CLI that traverses local imports from an entry file and outputs relevant code in traversal order. It
-is designed for AI workflows where precise context matters more than full repository dumps.
+`code-slicer` is a CLI that traverses local imports from an entry file and
+outputs relevant code in traversal order. It is designed for AI workflows where
+precise context matters more than full repository dumps.
 
 ## Quickstart
 
@@ -158,7 +160,8 @@ code-slicer src/entrypoint.ts --format xml
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for process, standards, and testing expectations.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for process, standards, and testing
+expectations.
 
 ## License
 

@@ -25,7 +25,7 @@ describe("Import resolver", () => {
           compilerOptions,
         );
 
-        expect(resolvedPath).toBeNull();
+        expect(resolvedPath).toBeUndefined();
       },
     );
   });
@@ -46,9 +46,9 @@ describe("Import resolver", () => {
             fromFilePath,
             compilerOptions,
             TypeScript.sys,
-          ).resolvedModule?.resolvedFileName ?? null;
+          ).resolvedModule?.resolvedFileName ?? undefined;
 
-        expect(resolvedByTypeScript).toBeNull();
+        expect(resolvedByTypeScript).toBeUndefined();
 
         const resolvedPath = await resolveImportFilePath(
           "./dep",
@@ -76,9 +76,9 @@ describe("Import resolver", () => {
             fromFilePath,
             compilerOptions,
             TypeScript.sys,
-          ).resolvedModule?.resolvedFileName ?? null;
+          ).resolvedModule?.resolvedFileName ?? undefined;
 
-        expect(resolvedByTypeScript).toBeNull();
+        expect(resolvedByTypeScript).toBeUndefined();
 
         const resolvedPath = await resolveImportFilePath(
           "./node_modules/example-pkg",
@@ -86,7 +86,7 @@ describe("Import resolver", () => {
           compilerOptions,
         );
 
-        expect(resolvedPath).toBeNull();
+        expect(resolvedPath).toBeUndefined();
       },
     );
   });
