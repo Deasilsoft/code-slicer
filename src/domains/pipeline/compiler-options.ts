@@ -1,12 +1,17 @@
 import NodePath from "node:path";
 import TypeScript from "typescript";
 
-export function getCompilerOptions(): TypeScript.CompilerOptions {
-  const configFilePath = TypeScript.findConfigFile(
-    process.cwd(),
-    TypeScript.sys.fileExists,
-    "tsconfig.json",
-  );
+export function getCompilerOptions(
+  fromFilePath: string,
+  projectFilePath?: string,
+): TypeScript.CompilerOptions {
+  const configFilePath = projectFilePath
+    ? NodePath.resolve(projectFilePath)
+    : TypeScript.findConfigFile(
+        NodePath.dirname(fromFilePath),
+        TypeScript.sys.fileExists,
+        "tsconfig.json",
+      );
 
   if (!configFilePath) {
     return {};

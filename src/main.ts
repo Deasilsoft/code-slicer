@@ -14,12 +14,18 @@ export async function main(argv: string[]): Promise<void> {
     .option("--format <format>", "Output format (plain, markdown, html, xml)", {
       default: "plain",
     })
-    .action(async (filePath: string, options: { format?: string }) => {
-      const files = await collectDependencyFiles(filePath);
-      const output = renderCollectedFiles(files, options.format);
+    .option("-p, --project <path>", "Path to tsconfig.json")
+    .action(
+      async (
+        filePath: string,
+        options: { format?: string; project?: string },
+      ) => {
+        const files = await collectDependencyFiles(filePath, options.project);
+        const output = renderCollectedFiles(files, options.format);
 
-      process.stdout.write(`${output}\n`);
-    });
+        process.stdout.write(`${output}\n`);
+      },
+    );
 
   cli.help();
   cli.version(pkg.version);

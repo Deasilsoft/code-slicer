@@ -25,8 +25,12 @@ async function withMockedCac(
   const outputHelp = vi.fn();
   const parse = vi.fn();
   const runMatchedCommand = vi.fn();
-  const option = vi.fn(() => ({ action }));
-  const command = vi.fn(() => ({ option }));
+  const commandChain = {
+    action,
+    option: vi.fn(() => commandChain),
+  };
+  const option = commandChain.option;
+  const command = vi.fn(() => commandChain);
   const help = vi.fn();
   const version = vi.fn();
 
@@ -196,6 +200,7 @@ describe("CLI wiring", () => {
         "<file-path>",
         "Collect local dependency files and output them in the selected format",
       );
+
       expect(cli.option).toHaveBeenCalledWith(
         "--format <format>",
         "Output format (plain, markdown, html, xml)",
@@ -203,6 +208,12 @@ describe("CLI wiring", () => {
           default: "plain",
         },
       );
+
+      expect(cli.option).toHaveBeenCalledWith(
+        "-p, --project <path>",
+        "Path to tsconfig.json",
+      );
+
       expect(cli.action).toHaveBeenCalledOnce();
       expect(cli.help).toHaveBeenCalledOnce();
       expect(cli.version).toHaveBeenCalledWith(pkg.version);

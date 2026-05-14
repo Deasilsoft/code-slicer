@@ -8,13 +8,15 @@ import type { CollectionContext, ModuleFile } from "./types.js";
 
 export async function collectDependencyFiles(
   filePath: string,
+  projectFilePath?: string,
 ): Promise<ModuleFile[]> {
   const resolvedFilePath = NodePath.resolve(filePath);
-  const compilerOptions = getCompilerOptions();
 
   if (!(await fileExists(resolvedFilePath))) {
     throw new Error(`Entry file not found: ${resolvedFilePath}`);
   }
+
+  const compilerOptions = getCompilerOptions(resolvedFilePath, projectFilePath);
 
   const context: CollectionContext = {
     compilerOptions,
