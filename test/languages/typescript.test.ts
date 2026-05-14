@@ -79,6 +79,26 @@ describe("TypeScript file collection", () => {
     );
   });
 
+  it("collects side-effect and type-only local imports", async () => {
+    await withProject(
+      {
+        "entry.ts":
+          'import "./setup";\nimport type { LocalType } from "./types";\nconst value: LocalType = { ok: true };\nvoid value;\n',
+        "setup.ts": 'globalThis.__setup = "ok";\n',
+        "types.ts": "export type LocalType = { ok: boolean };\n",
+      },
+      async (project) => {
+        const files = await collectDependencyFiles(project.path("entry.ts"));
+
+        expect(getRelativeFilePaths(project.root, files)).toEqual([
+          "entry.ts",
+          "setup.ts",
+          "types.ts",
+        ]);
+      },
+    );
+  });
+
   it("does not recurse forever when files import each other", async () => {
     await withProject(
       {

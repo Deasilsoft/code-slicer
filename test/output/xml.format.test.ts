@@ -7,26 +7,31 @@ describe("XML output format", () => {
   it("renders xml nodes with escaped content", async () => {
     await withProject(
       {
-        "entry.ts": "export const xml = '<node attr=\"ok\">';\n",
+        "entry.ts": "export const xml = '<node attr=\"ok\">';",
       },
       async (project) => {
+        project.chdir();
+
         const entryFilePath = NodePath.join(project.root, "entry.ts");
-        const entryHeading =
-          NodePath.relative(process.cwd(), entryFilePath) || entryFilePath;
 
         const output = renderCollectedFiles(
           [
             {
               filePath: entryFilePath,
-              sourceCode: "export const xml = '<node attr=\"ok\">';\n",
+              sourceCode: "export const xml = '<node attr=\"ok\">';",
             },
           ],
           "xml",
         );
 
-        expect(output).toContain('<?xml version="1.0" encoding="UTF-8"?>');
-        expect(output).toContain(`<file path="${entryHeading}">`);
-        expect(output).toContain("&lt;node attr=&quot;ok&quot;&gt;");
+        expect(output).toMatchInlineSnapshot(`
+          "<?xml version="1.0" encoding="UTF-8"?>
+          <files>
+            <file path="entry.ts">
+              <source>export const xml = &apos;&lt;node attr=&quot;ok&quot;&gt;&apos;;</source>
+            </file>
+          </files>"
+        `);
       },
     );
   });

@@ -7,34 +7,33 @@ describe("Plain output format", () => {
   it("renders plain output by default", async () => {
     await withProject(
       {
-        "entry.ts": 'import "./dep";\n',
-        "dep.ts": 'export const dep = "dep";\n',
+        "entry.ts": 'import "./dep";',
+        "dep.ts": 'export const dep = "dep";',
       },
       async (project) => {
+        project.chdir();
+
         const entryFilePath = NodePath.join(project.root, "entry.ts");
         const dependencyFilePath = NodePath.join(project.root, "dep.ts");
-        const entryHeading =
-          NodePath.relative(process.cwd(), entryFilePath) || entryFilePath;
-        const dependencyHeading =
-          NodePath.relative(process.cwd(), dependencyFilePath) ||
-          dependencyFilePath;
 
         const output = renderCollectedFiles([
           {
             filePath: entryFilePath,
-            sourceCode: 'import "./dep";\n',
+            sourceCode: 'import "./dep";',
           },
           {
             filePath: dependencyFilePath,
-            sourceCode: 'export const dep = "dep";\n',
+            sourceCode: 'export const dep = "dep";',
           },
         ]);
 
-        expect(output).toContain(`${entryHeading}\nimport "./dep";\n`);
-        expect(output).toContain(
-          `\n\n${dependencyHeading}\nexport const dep = "dep";\n`,
-        );
-        expect(output).not.toContain("```\n");
+        expect(output).toMatchInlineSnapshot(`
+          "entry.ts
+          import "./dep";
+
+          dep.ts
+          export const dep = "dep";"
+        `);
       },
     );
   });
