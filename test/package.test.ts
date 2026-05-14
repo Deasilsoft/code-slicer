@@ -112,6 +112,19 @@ describe("Package", () => {
       expect(result.stderr).toBe("");
     });
 
+    it("uses explicit --project config when invoked through the packaged bin", () => {
+      const result = runPackagedCli([
+        "src/custom-project.js",
+        "--project",
+        "tsconfig.custom.json",
+      ]);
+
+      expect(result.status, result.output).toBe(0);
+      expect(result.stdout).toContain("src/custom-project.js");
+      expect(result.stdout).toContain("src/lib/util.ts");
+      expect(result.stderr).toBe("");
+    });
+
     it.each([
       [
         "plain",
